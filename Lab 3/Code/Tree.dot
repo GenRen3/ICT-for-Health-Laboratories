@@ -1,0 +1,21 @@
+digraph Tree {
+node [shape=box, style="filled, rounded", color="black", fontname=helvetica] ;
+edge [fontname=helvetica] ;
+0 [label=<Hemoglobin &le; 12.95<br/>entropy = 0.99<br/>samples = 337<br/>value = [149, 188]<br/>class = CKD>, fillcolor="#399de535"] ;
+1 [label=<entropy = 0.0<br/>samples = 161<br/>value = [0, 161]<br/>class = CKD>, fillcolor="#399de5ff"] ;
+0 -> 1 [labeldistance=2.5, labelangle=45, headlabel="True"] ;
+2 [label=<Specific Gravity &le; 1.017<br/>entropy = 0.618<br/>samples = 176<br/>value = [149, 27]<br/>class = Not CKD>, fillcolor="#e58139d1"] ;
+0 -> 2 [labeldistance=2.5, labelangle=-45, headlabel="False"] ;
+3 [label=<entropy = 0.0<br/>samples = 23<br/>value = [0, 23]<br/>class = CKD>, fillcolor="#399de5ff"] ;
+2 -> 3 ;
+4 [label=<Albumin &le; 0.5<br/>entropy = 0.175<br/>samples = 153<br/>value = [149, 4]<br/>class = Not CKD>, fillcolor="#e58139f8"] ;
+2 -> 4 ;
+5 [label=<Serum Creatinine &le; 2.05<br/>entropy = 0.058<br/>samples = 150<br/>value = [149, 1]<br/>class = Not CKD>, fillcolor="#e58139fd"] ;
+4 -> 5 ;
+6 [label=<entropy = 0.0<br/>samples = 149<br/>value = [149, 0]<br/>class = Not CKD>, fillcolor="#e58139ff"] ;
+5 -> 6 ;
+7 [label=<entropy = 0.0<br/>samples = 1<br/>value = [0, 1]<br/>class = CKD>, fillcolor="#399de5ff"] ;
+5 -> 7 ;
+8 [label=<entropy = 0.0<br/>samples = 3<br/>value = [0, 3]<br/>class = CKD>, fillcolor="#399de5ff"] ;
+4 -> 8 ;
+}

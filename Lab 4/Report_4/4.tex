@@ -1,0 +1,210 @@
+\documentclass[12pt]{article}
+\usepackage[left=3cm, right=3cm, top=3cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+\usepackage{subcaption}
+\usepackage{amsmath}
+\renewcommand{\vec}{\mathbf}
+\usepackage{todonotes}
+\usepackage{wrapfig}
+\usepackage[font=scriptsize]{caption}
+\usepackage{mwe}
+\usepackage{multicol}
+\usepackage{float}
+\usepackage{amsmath,tabularx}
+\usepackage{booktabs}
+\usepackage[normalem]{ulem}
+\usepackage[T1]{fontenc}
+\renewcommand{\vec}{\mathbf}
+\usepackage[utf8]{inputenc}
+\useunder{\uline}{\ul}{}
+\usepackage{enumitem}
+%\usepackage{media9}
+\usepackage[colorlinks=true, citecolor=blue, linkcolor=black, urlcolor=red]{hyperref}
+
+
+
+\begin{document}
+
+\pagenumbering{gobble}
+
+\begin{center}
+\textbf{\Huge POLITECNICO DI TORINO}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=2.8in]{poli.png}
+\end{figure}
+
+\end{center}
+\begin{center}
+\vspace{0.05in}
+\Large{\textbf{ICT For Smart Societies}\\
+\vspace{0.08in}
+\Large ICT for Health (Lab 2)}\\
+\large Prof. Monica Visintin
+\end{center}
+\begin{center}
+\vspace{0.08in}
+\end{center}
+
+\vspace{0.8in}
+\begin{center}
+\textbf{\Huge HIDDEN MARKOV MACHINES}
+\end{center}
+
+\vspace{0.75in}
+\begin{center}
+\vspace{1in}
+\textbf{\Large GENNARO RENDE}\\
+\textbf{S218951}\\
+\end{center}
+
+
+
+\pagebreak
+
+\pagenumbering{arabic}
+
+
+
+
+
+\section{Introduction}
+\subsection{Parkinson's Disease}
+Parkinson’s disease (PD) is a progressive disease that affects nerve cells in the brain responsible for body movement. Because of the death of dopamine-producing neurons, patients affected by PD show symptoms such as slowness, tremor, balance problems and stiffness. Treatments focus on reducing symptoms to allow a more active lifestyle. Patients often have resting tremor, rigidity, akinesia and bradykinesia. The loss of muscles control affects vocal cords, thus causing speech impairment and voice disorders in 90\% of the patients. 
+
+
+\subsection{Objective of the laboratory \& Data-Set}
+The aim of this laboratory is to develop an algorithm that can identify patients as healthy or ill by analyzing their vocal samples, for one of the most common symptoms of the disease is the inability of keeping the vocal tract opened, due to muscular contraction. 
+The data-set is made of 20 .wav recordings of patients pronouncing the \textit{"a"} vowel for a certain amount of time (according to the patients' muscular possibility). The recordings have been made with a mobile phone at a sampling frequency of 8 kHz.
+
+\section{The Algorithm}
+
+\subsection{How it works}
+The code we developed has helped us to identify healthy  or ill patients by means of Hidden Markov Machines (HMMs). An HMM builds the system as a finite state machine with hidden (i.e. unobserved) states. In the first place, all 20 voice samples are processed and quantified by the function pre\_process\_data, then quantified samples are used in the main code (\texttt{main.m}) to train and test the two HMMs, one for the healthy and one for the ill patients.
+
+\subsection{Function \texttt{pre\_process\_data.m}}
+The Fourier transformation of the voice signal is characterized by several peaks. The one at the lowest frequency gives the fundamental frequency \textit{f}. The signal is then analyzed in the time domain. Peaks are found approximately at time intervals of $\frac{1}{f_{0}}$. Each interval is interpolated taking $N_{s}-1$ samples, while the newly obtained signal $x[n]$ is quantified using $N_{q}$ values. The function outputs two cell vectors: \texttt{hq} with the 10 quantified voice signals of the healthy patients and \texttt{pq} with the 10 quantified voice signals of the patients affected by PD.
+
+\subsection{The algorithm in \texttt{main.m}}
+
+
+In the main code, the initial set values are $N_{s}$, $N_{q}$. Tolerance and the number of iterations, which are the HMM's parameters, are also set at the beginning of the code; the Baum–Welch algorithm is used to find the unknown parameters of the HMM by using a forward-backward algorithm.
+The initial transition and emission matrices are created during the training phase. 
+
+\begin{itemize}[noitemsep]
+\item \textit{The emission matrix} \textbf{B} is randomly generated with dimensions of $N_{s}\times N_{q}$. Data along the rows are then normalized; 
+\item \textit{The transition matrix} \textbf{A} is a $N_{s}\times N_{s}$ and is generated in two different ways: randomly (normalized rows) and circularly. 
+\end{itemize}
+The circular matrix \textbf{A} is set with a first row in the following sequence: $[q \; p \; q \; ... \; q]$ where:  
+\begin{itemize}[noitemsep]
+\item $p$ is determined equal to $0.9$ and represents the probability of changing from state 1 to state 2;
+\item $q$ is defined as $q=\frac{1-p}{N_{s}-1}$.
+\end{itemize}
+The following rows have the same structure but the position of the value $q$ is shifted by one position to the right. The Matlab function \texttt{hmmtrain} is used to train the HMMs using both the training sets of healthy and ill patients and the two different transition matrices. The function's outputs are the final emission and transition matrices to be used in the next step. The testing phase uses the Matlab function \texttt{hmmdecode} to obtain the logarithm of the probability that a given sample belongs to that machine at the end of the process. The function is applied to training and testing sets, one time by using the matrices obtained from the randomly generated \textbf{A} and another time by using the matrices obtained from the circulant \textbf{A}. To evaluate the specificity, the algorithm compares the probability of the true negative with the probability of the false positive, while the evaluation of the sensitivity is carried out by comparing the probability of the true positive with the probability of the false negative.
+
+
+
+\section{Results}
+The algorithm has been implemented using three different sets for training and testing, as a sort of 3-fold cross validation:
+\begin{itemize}[noitemsep]
+	\item samples 1-7 as training and 8-10 as testing
+	\item samples 4-10 as training and 1-3 as testing
+	\item samples 1-3, 7-10 as training and 4-6 as testing
+\end{itemize}
+Several trials have been made by changing the parameters and all the following results are shown as an average over the three different training and testing sets. The Mean values of specificity and sensitivity for the two transition matrices and for different values of $N_{s} = N_{q}$ are displayed in table [{\textbf{\ref{table1}}}]. The results are very similar and as it is to be expected, in both cases they are better for the training sets than for the testing ones. A difference can be seen looking at the specificities and sensitivities for the different values of $N_{s} = N_{q}$. A small number of states gives poor results in comparison to the ones obtained with bigger values. At the same time it can be seen that values larger than $N_{s} = 8$ don't improve significantly the specificity or the sensitivity, actually they start to decrease.
+
+\begin{table}[H]\tiny
+\begin{minipage}[b]{0.5\linewidth}
+\begin{tabular}{lccccc}
+\hline
+\multicolumn{6}{c}{\textbf{Matrix A random}} \\ \hline
+\multicolumn{1}{c}{\textbf{$N_{s}$}} & \textbf{5} & \textbf{7} & \textbf{8} & \textbf{9} & \textbf{11} \\ \hline
+\textbf{Spec. train (\%)} & 90,47 & 95,24 & 100 & 100 & 100 \\ \hline
+\textbf{Spec. test (\%)} & 66,67 & 66,67 & 66,67 & 77,78 & 66,67 \\ \hline
+\textbf{Sens. train (\%)} & 80,95 & 90,47 & 100 & 95,24 & 100 \\ \hline
+\textbf{Sens. test (\%)} & 55,56 & 88,89 & 84,13 & 88,89 & 77,78 \\ \hline
+\end{tabular}
+\end{minipage}
+\hspace{0.25cm}
+\begin{minipage}[b]{0.1\linewidth}
+\centering
+\begin{tabular}{lccccc}
+\hline
+\multicolumn{6}{c}{\textbf{Matrix A circular}} \\ \hline
+\multicolumn{1}{c}{\textbf{$N_{s}$}} & \textbf{5} & \textbf{7} & \textbf{8} & \textbf{9} & \textbf{11} \\ \hline
+\textbf{Spec. train (\%)} & 95,24 & 95,24 & 100 & 100 & 100 \\ \hline
+\textbf{Spec. test (\%)} & 55,56 & 77,78 & 100 & 88,89 & 77,79 \\ \hline
+\textbf{Sens. train (\%)} & 66,67 & 100 & 0 & 95,24 & 100 \\ \hline
+\textbf{Sens. test (\%)} & 66,67 & 88,89 & 88,89 & 88,89 & 77,78 \\ \hline
+\end{tabular}\end{minipage}
+\caption{Mean values of specificity and sensitivity over the three different training and testing sets. $N_{s} = N_{q}$, with $tolerance = 10^{-3}$ and number of iterations = 200}
+\label{table1}
+\end{table}
+
+Using different values of tolerance for the \texttt{hmmtrain} function, gives the results shown in table [{\textbf{\ref{table3}}}]. As the tolerance increases, the specificities and sensitivities obtained tend to decrease slightly. 
+
+ \begin{table}[H]\tiny
+    \begin{subtable}[h]{0.45\textwidth}
+        \centering
+       \begin{tabular}{lcccc}
+\hline
+\multicolumn{1}{c}{} & \textbf{\begin{tabular}[c]{@{}c@{}}Spec.\\ train (\%)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Spec.\\ test (\%)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Sens.\\ train (\%)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Sens.\\ test (\%)\end{tabular}} \\ \hline
+random \textbf{A} &95,24 &88,89 &80,95 &66,67 \\ \hline
+circ. \textbf{A} &95,24 &66,67 &85,71 &66,67  \\ \hline
+\end{tabular}      \caption{\tiny$N_{s}=5$, $N_{q}=10$}
+       \label{tab:1a}
+    \end{subtable}
+\hspace{0.7cm}
+    \begin{subtable}[h]{0.45\textwidth}
+        \centering
+        \begin{tabular}{lcccc}
+\hline
+\multicolumn{1}{c}{} & \textbf{\begin{tabular}[c]{@{}c@{}}Spec.\\ train (\%)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Spec.\\ test (\%)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Sens.\\ train (\%)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Sens.\\ test (\%)\end{tabular}} \\ \hline
+random \textbf{A} &100 &88,89 &90,47 &77,78 \\ \hline
+circ. \textbf{A} &100 &88,89 &90,47 &77,78  \\ \hline
+\end{tabular}
+        \caption{\tiny$N_{s}=10$, $N_{q}=5$}
+        \label{tab:1b}
+     \end{subtable}
+     \caption{Mean values of specificity and sensitivity evaluated for $N_{s} \neq N_{q}$, with $tolerance = 10^{-3}$ and number of iterations = 200}
+     \label{table2}
+\end{table}
+
+Changes in the results are more clearly visible when using $N_{s} \neq N_{q}$, as shown in table [{\textbf{\ref{table2}}}]. The biggest difference that we can see respect to table [{\textbf{\ref{table1}}}], is that with $N_{s} < N_{q}$ we get slightly worse results because there aren't enough states to descrive the system.
+
+\begin{table}[H]\tiny
+    \begin{subtable}[h]{0.45\textwidth}
+        \centering
+\begin{tabular}{lcccc}
+\hline
+\multicolumn{1}{c}{} & \textbf{\begin{tabular}[c]{@{}c@{}}Spec.\\ train (\%)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Spec.\\ test (\%)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Sens.\\ train (\%)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Sens.\\ test (\%)\end{tabular}} \\ \hline
+random \textbf{A} &80,95 &77,78 &100 &88,89 \\ \hline
+circ. \textbf{A} &100 &100 &100 &88,89  \\ \hline
+
+\end{tabular}      \caption{\tiny$tolerance=10^{-2}$}
+       \label{tab:3a}
+    \end{subtable}
+\hspace{0.7cm}
+    \begin{subtable}[h]{0.45\textwidth}
+        \centering
+\begin{tabular}{lcccc}
+\hline
+\multicolumn{1}{c}{} & \textbf{\begin{tabular}[c]{@{}c@{}}Spec.\\ train (\%)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Spec.\\ test (\%)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Sens.\\ train (\%)\end{tabular}} & \textbf{\begin{tabular}[c]{@{}c@{}}Sens.\\ test (\%)\end{tabular}} \\ \hline
+random \textbf{A} &90,47 &55,56 &80,95 &66,67 \\ \hline
+circ. \textbf{A} &100 &77,78 &95,24 &88,89  \\ \hline
+\end{tabular}
+        \caption{\tiny$tolerance=10^{-1}$}
+        \label{tab:3b}
+     \end{subtable}
+     \caption{Mean values of specificity and sensitivity for two different values of tolerance, with $N_{s} = N_{q} = 8$, and number of iterations = 200}
+     \label{table3}
+\end{table} 
+
+
+\section{Comments}
+Among all the changes of parameters made, we can say that the variations are not significant between the different environments created and that for this dataset, $N_{s} = N_{q} = 8$ is the best choice since it gives the highest percentage results. The small variations are due to the poor data availability, thus training is not efficient. Not all the patients affected by this disease show speech impairment, so a classification algorithm based on voice signals should just be a starting point for the diagnosis.  
+
+\end{document}

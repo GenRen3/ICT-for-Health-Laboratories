@@ -1,0 +1,9 @@
+\BOOKMARK [0][-]{chapter.1}{Purpose of the laboratory}{}% 1
+\BOOKMARK [1][-]{section.1.1}{Data-Set}{chapter.1}% 2
+\BOOKMARK [1][-]{section.1.2}{Objective of the result}{chapter.1}% 3
+\BOOKMARK [0][-]{chapter.2}{Description of the algorithm}{}% 4
+\BOOKMARK [1][-]{section.2.1}{Cleaning of the photo}{chapter.2}% 5
+\BOOKMARK [1][-]{section.2.2}{Filling holes and eliminating islands}{chapter.2}% 6
+\BOOKMARK [1][-]{section.2.3}{Finding the image's perimeter}{chapter.2}% 7
+\BOOKMARK [1][-]{section.2.4}{Calculating the image's area and perimeter}{chapter.2}% 8
+\BOOKMARK [1][-]{section.2.5}{Data Results}{chapter.2}% 9
